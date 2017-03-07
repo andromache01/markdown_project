@@ -3,10 +3,12 @@ install.packages("ggplot2")
 install.packages("plyr")
 install.packages("dplyr")
 install.packages("curl")
+install.packages("knitr")
 library(curl)
 library(ggplot2)
 library(dplyr)
 library(viridis)
+library(reshape2)
 #getting data to work with
 gapminder_location<-curl(url = "https://raw.githubusercontent.com/resbaz/r-novice-gapminder-files/master/data/gapminder-FiveYearData.csv")
 gapminder<-read.csv(gapminder_location, stringsAsFactors = FALSE)
@@ -42,14 +44,14 @@ gdp<-gapminder$gdpPercap*gapminder$pop
 copygapm<-cbind(copygapm, gdp)
 gapminder<-cbind(gapminder,gapminder$pop/1000000)
 
-#how to make a function
+#how to make a function 
 #don't necessarily need return statement, automatically returns last line of function
 calcgdp<- function(dat){
   gdp<-dat$gdpPercap*dat$pop
   dat<-cbind(dat,gdp)
   return(dat)
 }
-calcgdp(gapminder)
+gapminder<-calcgdp(gapminder)
 
 newgap<-calcgdp(gapminder[1:4,])
 #add GDP for 2007 data and 1952 data
@@ -192,6 +194,8 @@ cont_gdp<-function(continent,year){
   
 mapply_cont_gdp<-function(year){
   mapply(cont_gdp, unique(x$continent), year)}
+
+
 output1<-sapply(unique(x$year), mapply_cont_gdp)
 colnames(output1)<-unique(x$year)
 print(output1)
@@ -199,6 +203,35 @@ print(output1)
 willthiswork<-gdpcontyear(gapminder)
 willthiswork
 
+#same thing for lifeexp
+lifecontyear<-function(dat){
+    x<-dat
+    
+    cont_life<-function(continent,year){
+      mean(x[x$year==year & x$continent==continent, "lifeExp"])
+    }
+    
+    mapply_cont_life<-function(year){
+      mapply(cont_life, unique(x$continent), year)}
+    
+    
+    output1<-sapply(unique(x$year), mapply_cont_life)
+    colnames(output1)<-unique(x$year)
+    print(output1)
+}
+
+lifeExp_contyear<-lifecontyear(gapminder)
+lifeExp_contyear<-melt(lifeExp_contyear)
+lifeExp_contyear<-data.frame(lifeExp_contyear)
+colnames(lifeExp_contyear)<-c("continent", "year", "lifeExp")
+ggplot(data=lifeExp_contyear, aes(x=year,y=lifeExp,color=continent)) +geom_point()+ geom_line() + scale_fill_viridis(discrete=TRUE) + scale_x_continuous(name="Life Expectancy") + scale_y_continuous(name="GDP per capita") + labs(title ="GDP per capita vs. Life Expectancy")
+
+ggplot(data=gapminder, aes(x=year,y=lifeExp,color=continent)) +geom_point()+ geom_smooth(method=lm)+ scale_fill_viridis(discrete=TRUE) + scale_x_continuous(name="Life Expectancy") + scale_y_continuous(name="GDP per capita") + labs(title ="GDP per capita vs. Life Expectancy")
+model1<-lm(lifeExp ~ year, continent=="Asia", data=gapminder)
+summary(model1)$r.squared
+summary(model1)
+years<-unique(gapminder$year)
+years[1]
 
 library(plyr)
 ddply(.data=calcgdp(gapminder),
