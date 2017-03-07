@@ -1,0 +1,59 @@
+---
+title: "Gapminder Data"
+author: "Tara Franey"
+date: "February 28, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.width=5, fig.height=5, warning=FALSE, message=FALSE)
+```
+
+## Gapminder Data
+
+Gapminder is a database of statistics on the wealth and health of nations.
+
+```{r gapminder, include=TRUE}
+library(curl)
+library(ggplot2)
+library(dplyr)
+library(viridis)
+gapminder_location<-curl(url = "https://raw.githubusercontent.com/resbaz/r-novice-gapminder-files/master/data/gapminder-FiveYearData.csv")
+gapminder<-read.csv(gapminder_location, stringsAsFactors = FALSE)
+gapminder<-cbind(gapminder,gapminder$pop/1000000)
+gapmindermean <- gapminder %>% group_by(continent) %>% summarize(lifeExPmean = mean(lifeExp)) 
+gapminderse <- gapminder %>% group_by(continent) %>% summarize(lifeExpSE = sd(lifeExp)/sqrt(length(lifeExp)))
+gapminderlifeexpdata<-full_join(gapmindermean,gapminderse)
+summary(gapminder)
+```
+
+By combining these variables and graphing them, we can see relationships. For example, we can look at the mean and standard deviation of life expectancy by continent. 
+
+```{r plot2, echo=FALSE}
+ggplot(data=gapminderlifeexpdata, aes(x=continent, y=lifeExPmean, color, fill=continent)) + scale_fill_viridis(discrete=TRUE) + geom_bar(stat = "identity", position = position_dodge()) +   geom_errorbar(aes(ymin=lifeExPmean-lifeExpSE, ymax=lifeExPmean+lifeExpSE), width=.2, position=position_dodge(.9))
+```
+
+in a specific year (each individual country is represented multiple times). Variation in life expectancy can be explained by continent. 
+
+```{r ttest1}
+pairwise.t.test(gapminder$lifeExp, gapminder$continent)  
+```
+
+We can also look at trends in life expectancy by year, where each dot represents a specific country 
+
+```{r plot1, echo=FALSE}
+ggplot(data=gapminder, aes(x=year,y=lifeExp))+geom_point()+ geom_smooth(method=lm) + scale_x_continuous(name="Life Expectancy") + scale_y_continuous(name="GDP per capita") + labs(title ="GDP per capita vs. Life Expectancy")
+```
+
+```{r model1, include=TRUE}
+model1<-lm(lifeExp ~ year, data=gapminder)
+```
+
+These data show a linear relationship; however, the linear model graphed above has an R-squared value of `r summary(model1)$r.squared`, possibly due to very high variability in life expectancy in each year. 
+
+Dividing these points out by 
+
+Dividing the 
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+This is the mean speed of all cars: `r mean(cars$speed)`
