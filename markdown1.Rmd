@@ -40,7 +40,7 @@ ggplot(data=gapminderlifeexpdata, aes(x=continent, y=lifeExPmean, color, fill=co
 Variation in life expectancy can be explained by continent, as calculated by a pairwise t-test. 
 
 ```{r t-test, include=TRUE}
-pairwise.t.test(gapminder$lifeExp, gapminder$continent)  
+pairwise.t.test(gapminder$lifeExp, gapminder$continent)
 ```
 
 We can also look at trends in life expectancy by year, where each dot represents a specific country 
@@ -72,8 +72,8 @@ modelOceania<-lm(lifeExp ~ year, continent=="Oceania", data=gapminder)
 Another notable visual feature of connecting the points by country is that two clear outliers pop out in terms of sharp life expectancy drops -- one in 1977, one in 1992.A simple code returns the countries these occurred in:
 
 ```{r genocide, echo=FALSE}
-gapminder %>% filter(year==1977) %>% filter(lifeExp==min(lifeExp))
-gapminder %>% filter(year==1992) %>% filter(lifeExp==min(lifeExp))
+gapminder %>% filter(year==1977) %>% filter(lifeExp==min(lifeExp)) %>% kable
+gapminder %>% filter(year==1992) %>% filter(lifeExp==min(lifeExp)) %>% kable
 ```
 
 The Khmer Rouge genocide in Cambodia occurred from 1975 to 1979. The Rwandan civil war occurred from 1990 to 1994. 
