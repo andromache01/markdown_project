@@ -1,12 +1,12 @@
 ---
-title: "Gapminder Data"
-author: "Tara Franey"
+title: "Analysis of Gapminder Data"
+author: "Tara Franey and Marzia Tamanna"
 date: "February 28, 2017"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.width=5, fig.height=5, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(echo = FALSE, fig.width=8, fig.height=6, fig.path='Figs/', warning=FALSE, message=FALSE)
 ```
 
 ## Gapminder Data
