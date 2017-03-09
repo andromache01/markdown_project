@@ -30,6 +30,7 @@ gapminderlifeexpdata<-full_join(gapminderlifemean,gapminderlifese)
 kable(summary(gapminder))
 ```
 
+#Life Expectancy Over Time
 By combining these variables and graphing them, we can see relationships. For example, we can look at the mean and standard deviation of life expectancy by continent. 
 
 ```{r plot2, echo=FALSE}
