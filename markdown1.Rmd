@@ -60,6 +60,25 @@ Dividing the data in this graph by continent provides additional information.
 ggplot(data=gapminder, aes(x=year,y=lifeExp, by=country, color=continent))+geom_point() + geom_line()+ scale_x_continuous(name="Year") + scale_color_viridis(discrete=TRUE) + scale_y_continuous(name="Life Expectancy") + labs(title ="Life Expectancy Over All Years Separated by Continent")
 ```
 
+```{r continentp, echo=FALSE}
+modelAsia<-lm(lifeExp ~ year, continent=="Asia", data=gapminder)
+modelAfrica<-lm(lifeExp ~ year, continent=="Africa", data=gapminder)
+modelEurope<-lm(lifeExp ~ year, continent=="Europe", data=gapminder)
+modelAmericas<-lm(lifeExp ~ year, continent=="Americas", data=gapminder)
+modelOceania<-lm(lifeExp ~ year, continent=="Oceania", data=gapminder)
+```
+
+Another interesting feature of connecting the points by country is that two clear outliers pop out in terms of sharp life expectancy drops -- one in 1977, one in 1992.A simple code returns the countries these occurred in:
+
+```{r genocide, echo=FALSE}
+gapminder %>% filter(year==1977) %>% filter(lifeExp==min(lifeExp))
+gapminder %>% filter(year==1992) %>% filter(lifeExp==min(lifeExp))
+```
+
+The Khmer Rouge genocide in Cambodia occurred from 1975 to 1979. The Rwandan genocide against the Tutsi occured in 1994. 
+
+The r-squared values for the relationship between life expectancy and year per continent using a linear model are much greater: Asia - `r summary(modelAsia)$r.squared`; Africa - `r summary(modelAfrica)$r.squared`; Americas - `r summary(modelAmericas)$r.squared`; Europe - `r summary(modelEurope)$r.squared`; Oceania - `r summary(modelOceania)$r.squared`. 
+
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
