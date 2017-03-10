@@ -92,3 +92,41 @@ gapminder %>% group_by(continent) %>% summarise(Meangdp = mean(gdpPercap)) %>%
   scale_fill_viridis(discrete=TRUE) + geom_bar(stat = "identity", position = position_dodge()) + labs(title ="Mean gdp across the Continents")
 ```
 From this plot we can state that, Africa has the least gdp and Oceania has the highest gdp among the five continents.
+
+
+## Comparison of gdp vs time for five continents
+
+
+```{r comparisongdp, echo=FALSE}
+calcGDP3 <- function(dat, year, continent) {
+  dat <- dat[dat$year %in% year, ]
+  dat <- dat[dat$continent %in% continent,]
+  
+  gdp <- dat$pop * dat$gdpPercap
+  
+  dat <- cbind(dat, gdp)
+  return(dat)
+}
+Asiagdp <- calcGDP3(gapminder, 1952:2007,continent="Asia")
+Africagdp <- calcGDP3(gapminder, 1952:2007,continent="Africa")
+Americasgdp <- calcGDP3(gapminder, 1952:2007,continent="Americas")
+Europegdp <- calcGDP3(gapminder, 1952:2007,continent="Europe")
+Oceaniagdp <- calcGDP3(gapminder, 1952:2007,continent="Oceania")
+p1 <- ggplot(Asiagdp, aes(x=year, y=gdpPercap, color='red')) +
+  geom_point() +
+  ggtitle("gdp vs year for Asia Continent")
+p2 <- ggplot(Africagdp, aes(x=year, y=gdpPercap, color='red')) +
+  geom_point() +
+  ggtitle("gdp vs year for Africa Continent")
+p3 <- ggplot(Americasgdp, aes(x=year, y=gdpPercap, color='red')) +
+  geom_point() +
+  ggtitle("gdp vs year for Americas Continent")
+p4 <- ggplot(Europegdp, aes(x=year, y=gdpPercap, color='red')) +
+  geom_point() +
+  ggtitle("gdp vs year for Europe Continent")
+p5 <- ggplot(Oceaniagdp, aes(x=year, y=gdpPercap, color='red')) +
+  geom_point() +
+  ggtitle("gdp vs year for Oceania Continent")
+grid.arrange(p1, p2, p3, p4, p5, ncol=3, nrow=2)
+```
+This figure displays how gdp is changing over time for the five continents.
