@@ -130,7 +130,7 @@ p4 <- ggplot(Europegdp, aes(x=year, y=gdpPercap, color='red')) +
 p5 <- ggplot(Oceaniagdp, aes(x=year, y=gdpPercap, color='red')) +
   geom_point() +
   ggtitle("gdp vs year for Oceania Continent")
-grid.arrange(p1, p2, p3, p4, p5, ncol=3, nrow=2)
+grid.arrange(p1, p2, p3, p4, p5, ncol=2, nrow=3)
 ```
 This figure displays how gdp is changing over time for the five continents.
 
