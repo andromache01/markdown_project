@@ -92,6 +92,7 @@ The Khmer Rouge genocide in Cambodia occurred from 1975 to 1979. The Rwandan civ
 
 ## Comparison of Mean gdp across the continents from 1952 to 2007
 
+ This plot will display Mean gdp of all countires and years in the data set, grouped by continent. From this plot we can state that, Africa has the least gdp and Oceania has the highest gdp among the five continents.
  
 ```{r continentMeangdp, echo=FALSE}
 gapminder %>% group_by(continent) %>% summarise(Meangdp = mean(gdpPercap)) %>%
@@ -101,13 +102,9 @@ gapminder %>% group_by(continent) %>% summarise(Meangdp = mean(gdpPercap)) %>%
 
 Figure 4: Mean gdp of all countires and years in the data set.
 
-From this plot we can state that, Africa has the least gdp and Oceania has the highest gdp among the five continents.
-
-
-***
-
 ## Comparison of gdp vs time for five continents
 
+This figure displays how gdp is changing over time for the five continents.
 
 ```{r comparisongdp, echo=FALSE}
 calcGDP3 <- function(dat, year, continent) {
@@ -143,10 +140,6 @@ grid.arrange(p1, p2, p3, p4, p5, ncol=2, nrow=3)
 ```
 
 Figure 5: The relationship between GDP over time for all countries and years in the data set, separated by continent. 
-
-This figure displays how gdp is changing over time for the five continents.
-
-***
 
 ## Relationship between population and gdpPercap
 
