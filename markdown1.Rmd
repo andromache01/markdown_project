@@ -130,3 +130,13 @@ p5 <- ggplot(Oceaniagdp, aes(x=year, y=gdpPercap, color='red')) +
 grid.arrange(p1, p2, p3, p4, p5, ncol=3, nrow=2)
 ```
 This figure displays how gdp is changing over time for the five continents.
+
+
+## Relationship between population and gdpPercap
+
+
+```{r gdpvspop, echo=FALSE}
+ggplot(data = gapminder, aes(x = pop, y = gdpPercap, color=continent)) +
+  geom_point() +  scale_y_log10() + geom_smooth(method="lm")
+```
+We thought there might be a clear relationship between population and gdpPercap in general, but from this plot it is noticed that there is a mixed views of this relationship across the continents which is not clearly visible.
