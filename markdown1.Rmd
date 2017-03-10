@@ -1,7 +1,7 @@
 ---
 title: "Analysis of Gapminder Data"
 author: "Tara Franey and Marzia Tamanna"
-date: "February 28, 2017"
+date: "March 10, 2007"
 output: pdf_document
 ---
 
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = FALSE, fig.width=7, fig.height=4, fig.align="center
 
 ## Gapminder Data
 
-Gapminder is a database of statistics on the wealth and health of nations of five continents.
+Gapminder is a database of statistics on the wealth and health of nations of five continents. The data is available [here](https://www.gapminder.org/). The gapminder data set represents 142 countries over a time span from 1952 to 2007, and includes population, life expectancy, and GDP per capita. 
 
 ```{r gapminder, echo=FALSE}
 library(curl)
@@ -31,22 +31,25 @@ gapminderlifeexpdata<-full_join(gapminderlifemean,gapminderlifese)
 kable(summary(gapminder))
 ```
 
+***
+
 #Life Expectancy Over Time
 By combining these variables and graphing them, we can see relationships. For example, we can look at the mean and standard deviation of life expectancy by continent. 
 
-```{r plot2, echo=FALSE}
-ggplot(data=gapminderlifeexpdata, aes(x=continent, y=lifeExPmean, color, fill=continent)) + scale_fill_viridis(discrete=TRUE) + geom_bar(stat = "identity", position = position_dodge()) +   geom_errorbar(aes(ymin=lifeExPmean-lifeExpSE, ymax=lifeExPmean+lifeExpSE), width=.2, position=position_dodge(.9))
+```{r plot2, echo=FALSE, fig.cap="Mean life expectancy over all years and countries in the data set, divided by continent, with standard error bars."}
+ggplot(data=gapminderlifeexpdata, aes(x=continent, y=lifeExPmean, color, fill=continent)) + scale_fill_viridis(discrete=TRUE) + geom_bar(stat = "identity", position = position_dodge()) +   geom_errorbar(aes(ymin=lifeExPmean-lifeExpSE, ymax=lifeExPmean+lifeExpSE), width=.2, position=position_dodge(.9)) + scale_x_discrete (name="Continent") + scale_y_continuous(name="Mean Life Expectancy") + labs(title ="Mean Life Expectancy by Continent")
 ```
 
-Variation in life expectancy can be explained by continent, as calculated by a pairwise t-test. 
-
-```{r t-test, include=TRUE}
-pairwise.t.test(gapminder$lifeExp, gapminder$continent)
+```{r anova, include=TRUE}
+anova<- summary(aov(lifeExp ~ continent, data = gapminder))
+p<-anova[[1]][[1,"Pr(>F)"]]
 ```
+Variation in life expectancy can be explained by continent. A One-Way ANOVA yields a p-value of $`r p`$. 
+
 
 We can also look at trends in life expectancy by year, where each dot represents a specific country 
 
-```{r plot1, echo=FALSE}
+```{r plot1, echo=FALSE, fig.cap="Individual points for life expectancy in each country and year represented in the data set, with a linear model fitted to the data."}
 ggplot(data=gapminder, aes(x=year,y=lifeExp))+geom_point()+ geom_smooth(method=lm) + scale_x_continuous(name="Year") + scale_y_continuous(name="Life Expectancy") + labs(title ="Life Expectancy Over All Countries and Years")
 ```
 
@@ -56,9 +59,9 @@ model1<-lm(lifeExp ~ year, data=gapminder)
 
 These data show a linear relationship; however, the linear model graphed above has an R-squared value of `r summary(model1)$r.squared`, possibly due to very high variability in life expectancy in each year. 
 
-Dividing the data in this graph by continent provides additional information. 
+Dividing the data in this graph by continent, as we know life expectancy has significantly different between continents, provides additional information. 
 
-```{r plot3, echo=FALSE}
+```{r plot3, echo=FALSE, fig.cap="A line is drawn for each country's life expectancy data over the years. The line's color is determined by the continent."}
 ggplot(data=gapminder, aes(x=year,y=lifeExp, by=country, color=continent))+geom_point() + geom_line()+ scale_x_continuous(name="Year") + scale_color_viridis(discrete=TRUE) + scale_y_continuous(name="Life Expectancy") + labs(title ="Life Expectancy Over All Years Separated by Continent")
 ```
 
@@ -70,6 +73,8 @@ modelAmericas<-lm(lifeExp ~ year, continent=="Americas", data=gapminder)
 modelOceania<-lm(lifeExp ~ year, continent=="Oceania", data=gapminder)
 ```
 
+The r-squared values for the relationship between life expectancy and year per continent using a linear model are much greater: Asia - `r summary(modelAsia)$r.squared`; Africa - `r summary(modelAfrica)$r.squared`; Americas - `r summary(modelAmericas)$r.squared`; Europe - `r summary(modelEurope)$r.squared`; Oceania - `r summary(modelOceania)$r.squared`. 
+
 Another notable visual feature of connecting the points by country is that two clear outliers pop out in terms of sharp life expectancy drops -- one in 1977, one in 1992.A simple code returns the countries these occurred in:
 
 ```{r genocide, echo=FALSE}
@@ -77,22 +82,20 @@ gapminder %>% filter(year==1977) %>% filter(lifeExp==min(lifeExp)) %>% kable
 gapminder %>% filter(year==1992) %>% filter(lifeExp==min(lifeExp)) %>% kable
 ```
 
-The Khmer Rouge genocide in Cambodia occurred from 1975 to 1979. The Rwandan civil war occurred from 1990 to 1994. 
-
-The r-squared values for the relationship between life expectancy and year per continent using a linear model are much greater: Asia - `r summary(modelAsia)$r.squared`; Africa - `r summary(modelAfrica)$r.squared`; Americas - `r summary(modelAmericas)$r.squared`; Europe - `r summary(modelEurope)$r.squared`; Oceania - `r summary(modelOceania)$r.squared`. 
-
-
+The Khmer Rouge genocide in Cambodia occurred from 1975 to 1979. The Rwandan civil war occurred from 1990 to 1994. While there are many human tragedies in the world, many of them go out of focus when you zoom out to these global statistics. The fact that these two events become almost more dramatic on this scale really speaks to the horrible magnitude of what happened in these countries.  
 
 ## Comparison of Mean gdp across the continents from 1952 to 2007
 
  
-```{r continentMeangdp, echo=FALSE}
+```{r continentMeangdp, echo=FALSE, fig.cap="Mean gdp of all countires and years in the data set, divided by country."}
 gapminder %>% group_by(continent) %>% summarise(Meangdp = mean(gdpPercap)) %>%
   ggplot(aes(x=continent,y=Meangdp, color, fill=continent))+ 
   scale_fill_viridis(discrete=TRUE) + geom_bar(stat = "identity", position = position_dodge()) + labs(title ="Mean gdp across the Continents")
 ```
 From this plot we can state that, Africa has the least gdp and Oceania has the highest gdp among the five continents.
 
+
+***
 
 ## Comparison of gdp vs time for five continents
 
@@ -131,12 +134,13 @@ grid.arrange(p1, p2, p3, p4, p5, ncol=3, nrow=2)
 ```
 This figure displays how gdp is changing over time for the five continents.
 
+***
 
 ## Relationship between population and gdpPercap
 
+We thought there might be a clear relationship between population and gdpPercap in general, but from this plot it is noticed that there is a mixed views of this relationship across the continents which is not clearly visible.
 
 ```{r gdpvspop, echo=FALSE}
 ggplot(data = gapminder, aes(x = pop, y = gdpPercap, color=continent)) +
   geom_point() +  scale_y_log10() + geom_smooth(method="lm")
 ```
-We thought there might be a clear relationship between population and gdpPercap in general, but from this plot it is noticed that there is a mixed views of this relationship across the continents which is not clearly visible.
